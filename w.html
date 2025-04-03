@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebNav Hub (Enhanced)</title>
+    <!-- Title updated -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        /* Theme Variables */
+        --primary-color: #4a90e2; /* Original Blue */
+        --primary-hover: #357abd; /* Darker Blue */
+        --bg-color: #f8f9fa; /* Lighter Gray Background */
+        --card-bg-color: #ffffff;
+        --text-color: #343a40; /* Darker Gray Text */
+        --subtle-text-color: #6c757d; /* Softer text for less emphasis */
+        /* Style Variables */
+        --border-radius: 16px; /* Even slightly larger radius */
+        --shadow: 0 5px 15px rgba(0, 0, 0, 0.07); /* Slightly deeper default shadow */
+        --hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Slightly deeper hover shadow */
+        --transition-speed: 0.3s; /* Slightly slower for smoother feel */
+        --transition-timing: ease-in-out; /* Smoother timing function */
+        /* RGB Variables for RGBA - Set by JS */
+        --primary-color-rgb: 74, 144, 226;
+        --card-bg-color-rgb: 255, 255, 255;
+        --text-color-rgb: 52, 58, 64;
+        --bg-color-rgb: 248, 249, 250; /* Added for potential use */
+      }
+
+      /* Dark Mode */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-color: #121212;
+          --card-bg-color: #1e1e1e;
+          --text-color: #e8eaed;
+          --subtle-text-color: #adb5bd; /* Dark mode subtle text */
+          --shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+          --hover-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+          --card-bg-color-rgb: 30, 30, 30;
+          --text-color-rgb: 232, 234, 237;
+          --bg-color-rgb: 18, 18, 18;
+        }
+      }
+
+      /* Reset & Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        font-size: 16px;
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        transition: background-color var(--transition-speed)
+            var(--transition-timing),
+          color var(--transition-speed) var(--transition-timing);
+      }
+
+      /* Header */
+      header {
+        /* Subtle texture/gradient variation */
+        background: linear-gradient(
+          140deg,
+          var(--primary-color) 0%,
+          color-mix(in srgb, var(--primary-color) 80%, var(--primary-hover) 20%)
+            100%
+        );
+        padding: 4rem 1rem; /* Slightly more padding */
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 0;
+        position: relative; /* For potential pseudo-elements */
+        overflow: hidden; /* Contain pseudo-elements */
+      }
+      /* Optional: Subtle pattern overlay */
+      /* header::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4"><path fill="%23ffffff" fill-opacity="0.05" d="M1 3h1v1H1V3zm2-2h1v1H3V1z"></path></svg>');
+        pointer-events: none;
+      } */
+      header h1 {
+        font-size: 3.2rem; /* Slightly larger */
+        font-weight: 700; /* Keep bold */
+        color: #fff;
+        margin: 0;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); /* Enhanced shadow */
+        letter-spacing: 0.5px; /* Slight spacing */
+      }
+
+      /* Sticky Navigation */
+      nav {
+        background-color: rgba(
+          var(--card-bg-color-rgb),
+          0.88
+        ); /* Keep translucency */
+        padding: 0.9rem 1rem; /* Adjusted padding */
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08); /* Refined shadow */
+        backdrop-filter: blur(15px); /* Increase blur slightly */
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(var(--text-color-rgb), 0.06); /* Softer border */
+        transition: background-color var(--transition-speed)
+            var(--transition-timing),
+          box-shadow var(--transition-speed) var(--transition-timing);
+      }
+      @media (prefers-color-scheme: dark) {
+        nav {
+          background-color: rgba(var(--card-bg-color-rgb), 0.9);
+          border-bottom: 1px solid rgba(var(--text-color-rgb), 0.1);
+        }
+      }
+      nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.7rem; /* Slightly more gap */
+      }
+      nav a {
+        color: var(--subtle-text-color); /* Use subtle color for non-active */
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 0.7rem 1.3rem; /* Adjusted padding */
+        border-radius: 12px; /* More rounded */
+        white-space: nowrap;
+        transition: all var(--transition-speed) var(--transition-timing);
+        border: 1px solid transparent;
+        display: block;
+        opacity: 0.9; /* Slightly less prominent */
+      }
+      nav a:hover {
+        background-color: rgba(
+          var(--primary-color-rgb),
+          0.08
+        ); /* Softer hover bg */
+        color: var(--primary-color);
+        opacity: 1;
+        transform: translateY(-2px); /* Enhanced lift */
+      }
+      nav a.active {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        opacity: 1;
+        box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.35); /* Enhanced active shadow */
+        transform: translateY(0); /* Reset transform */
+      }
+      nav a.active:hover {
+        background-color: var(--primary-hover);
+        box-shadow: 0 6px 18px rgba(var(--primary-color-rgb), 0.4); /* Deeper active hover shadow */
+      }
+
+      /* Main Content Area */
+      main {
+        max-width: 1300px;
+        margin: 3.5rem auto; /* Increased top margin */
+        padding: 0 max(2rem, calc((100vw - 1300px) / 2));
+      }
+
+      /* Category Title */
+      .category-title {
+        font-size: 1.9rem; /* Slightly larger */
+        font-weight: 700;
+        color: var(--text-color);
+        margin: 5rem 0 2.5rem; /* Increased margins */
+        display: flex;
+        align-items: center;
+        gap: 1.2rem; /* Increased gap */
+        scroll-margin-top: 120px; /* Adjust based on final nav height + buffer */
+        border-bottom: 1px solid rgba(var(--text-color-rgb), 0.08); /* Softer border */
+        padding-bottom: 1rem; /* Increased padding */
+        position: relative;
+      }
+      .category-title i {
+        color: var(--primary-color);
+        font-size: 1.4rem; /* Slightly larger icon */
+        width: 46px;
+        height: 46px;
+        border-radius: 14px; /* Larger container */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          135deg,
+          rgba(var(--primary-color-rgb), 0.08),
+          rgba(var(--primary-color-rgb), 0.12)
+        ); /* Subtle gradient bg */
+        border: 1px solid rgba(var(--primary-color-rgb), 0.1); /* Subtle border */
+        box-shadow: 0 2px 5px rgba(var(--primary-color-rgb), 0.05); /* Subtle shadow on icon */
+        transition: all var(--transition-speed) var(--transition-timing);
+      }
+      /* Optional: Add subtle movement to icon on title visibility (needs JS observer) */
+      .category-title:hover i {
+        /* Or trigger via JS */
+        transform: scale(1.05) rotate(-3deg);
+        box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.1);
+      }
+
+      /* Link Grid */
+      .link-grid {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fill,
+          minmax(190px, 1fr)
+        ); /* Slightly wider cards */
+        gap: 1.8rem; /* Increased gap */
+        margin-bottom: 5rem; /* Increased bottom margin */
+      }
+
+      /* Link Card */
+      .link-card {
+        background-color: var(--card-bg-color);
+        /* Optional subtle gradient background */
+        /* background: linear-gradient(135deg, var(--card-bg-color) 0%, color-mix(in srgb, var(--card-bg-color) 97%, var(--bg-color) 3%) 100%); */
+        border-radius: var(--border-radius);
+        padding: 1.6rem 1.3rem; /* Adjusted padding */
+        text-align: center;
+        min-height: 170px; /* Increased min-height */
+        transition: all var(--transition-speed) var(--transition-timing);
+        position: relative;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.1rem; /* Increased gap */
+        border: 1px solid rgba(var(--text-color-rgb), 0.05); /* Softer default border */
+        overflow: hidden;
+        /* perspective: 1000px; Optional for 3D effects */
+      }
+      .link-card:hover {
+        box-shadow: var(--hover-shadow);
+        border-color: rgba(
+          var(--primary-color-rgb),
+          0.4
+        ); /* Slightly less intense hover border */
+        transform: translateY(-6px) /* scale(1.02) */; /* Enhanced lift, optional scale */
+        /* Optional: Subtle background shift on hover */
+        background-color: color-mix(
+          in srgb,
+          var(--card-bg-color) 98%,
+          var(--primary-color) 2%
+        );
+      }
+      .link-card i {
+        font-size: 2.4rem; /* Larger icon */
+        color: var(--primary-color);
+        height: 52px;
+        width: 52px;
+        border-radius: 16px; /* Larger container */
+        margin-bottom: 0.6rem; /* Adjusted margin */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+          135deg,
+          rgba(var(--primary-color-rgb), 0.1),
+          rgba(var(--primary-color-rgb), 0.15)
+        ); /* Gradient icon bg */
+        transition: all var(--transition-speed) var(--transition-timing);
+        /* Optional: Add a subtle border to the icon itself */
+        /* border: 1px solid rgba(var(--primary-color-rgb), 0.1); */
+      }
+      .link-card:hover i {
+        background: linear-gradient(
+          135deg,
+          rgba(var(--primary-color-rgb), 0.15),
+          rgba(var(--primary-color-rgb), 0.2)
+        );
+        color: var(--primary-hover);
+        transform: scale(1.08) rotate(-5deg); /* More dynamic icon hover */
+        box-shadow: 0 3px 8px rgba(var(--primary-color-rgb), 0.1); /* Shadow on icon hover */
+      }
+      .link-card h3 {
+        font-size: 1.05rem; /* Slightly larger */
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0;
+        word-break: break-word;
+        line-height: 1.45; /* Adjusted line height */
+        height: 2.9em; /* Allows for 2 lines, adjusted */
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        transition: color var(--transition-speed) var(--transition-timing);
+      }
+      .link-card:hover h3 {
+        color: var(--primary-hover); /* Title color changes on hover */
+      }
+      .link-card a {
+        position: absolute;
+        inset: 0;
+        text-decoration: none;
+        z-index: 2;
+      } /* Full card link */
+
+      /* Footer */
+      footer {
+        padding: 3.5rem 1rem 2rem;
+        text-align: center;
+        margin-top: 6rem; /* Increased margin */
+        border-top: 1px solid rgba(var(--text-color-rgb), 0.08); /* Softer border */
+        background-color: color-mix(
+          in srgb,
+          var(--bg-color) 95%,
+          var(--text-color) 5%
+        ); /* Subtle background tint */
+      }
+      @media (prefers-color-scheme: dark) {
+        footer {
+          background-color: rgba(var(--card-bg-color-rgb), 0.5);
+        }
+      }
+      footer p {
+        color: var(--subtle-text-color);
+        opacity: 0.8;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+      }
+      footer nav {
+        margin-top: 1rem;
+        background: none;
+        box-shadow: none;
+        padding: 0;
+        position: static;
+        border: none;
+      }
+      footer a {
+        color: var(--subtle-text-color);
+        text-decoration: none;
+        opacity: 0.8;
+        font-size: 0.9rem;
+        padding: 0.6rem 1.1rem;
+        border-radius: 10px;
+        margin: 0 0.4rem;
+        display: inline-block;
+        transition: all var(--transition-speed) var(--transition-timing);
+      }
+      footer a:hover {
+        opacity: 1;
+        background-color: rgba(var(--primary-color-rgb), 0.1);
+        color: var(--primary-color);
+        transform: translateY(-2px); /* Add lift effect */
+      }
+
+      /* Accessibility */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      /* Reduced Motion */
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto !important;
+        }
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+        .link-card:hover {
+          transform: none;
+        }
+        .link-card:hover i {
+          transform: none;
+        }
+        nav a:hover {
+          transform: none;
+        }
+        footer a:hover {
+          transform: none;
+        }
+        .category-title:hover i {
+          transform: none;
+        }
+      }
+
+      /* Responsive Adjustments (Keep previous adjustments, maybe slightly refine) */
+      @media (max-width: 768px) {
+        header {
+          padding: 3rem 1rem;
+        }
+        header h1 {
+          font-size: 2.8rem;
+        }
+        main {
+          padding: 0 1.5rem;
+          margin: 2.5rem auto;
+        }
+        .category-title {
+          font-size: 1.7rem;
+          margin: 4rem 0 2rem;
+          scroll-margin-top: 100px;
+          gap: 1rem;
+        }
+        .category-title i {
+          width: 42px;
+          height: 42px;
+          font-size: 1.3rem;
+        }
+        nav ul {
+          padding: 0 1rem; /* Keep horizontal scroll */
+        }
+        nav a {
+          padding: 0.6rem 1.1rem;
+          font-size: 0.9rem;
+          flex-shrink: 0;
+        }
+        footer {
+          padding: 3rem 1rem 1.5rem;
+          margin-top: 4.5rem;
+        }
+        footer p,
+        footer a {
+          font-size: 0.85rem;
+        }
+        .link-grid {
+          grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+          gap: 1.5rem;
+        } /* Adjusted */
+      }
+      @media (max-width: 480px) {
+        html {
+          font-size: 15px;
+        }
+        header {
+          padding: 2.5rem 1rem;
+        }
+        header h1 {
+          font-size: 2.4rem;
+        }
+        main {
+          padding: 0 1rem;
+        }
+        nav a {
+          padding: 0.5rem 0.9rem;
+          font-size: 0.85rem;
+        }
+        .link-grid {
+          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+          gap: 1.2rem;
+        } /* Adjusted */
+        .link-card {
+          padding: 1.3rem 1rem;
+          min-height: 150px;
+        }
+        .link-card i {
+          font-size: 2rem;
+          height: 44px;
+          width: 44px;
+          border-radius: 14px;
+        }
+        .link-card h3 {
+          font-size: 0.95rem;
+          height: 2.8em;
+        }
+        .category-title {
+          font-size: 1.5rem;
+          margin: 3rem 0 1.8rem;
+        }
+        .category-title i {
+          width: 38px;
+          height: 38px;
+          font-size: 1.2rem;
+        }
+        footer p,
+        footer a {
+          font-size: 0.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>WebNav Hub</h1>
+    </header>
+    <nav>
+      <ul>
+        <!-- Navigation links remain the same -->
+        <li><a href="#ai-search">AI搜索</a></li>
+        <li><a href="#social">社交媒体</a></li>
+        <li><a href="#tools">实用工具</a></li>
+        <li><a href="#tech-news">科技资讯</a></li>
+        <li><a href="#dev">开发者</a></li>
+        <li><a href="#cloud-storage">云存储</a></li>
+        <li><a href="#email">邮箱</a></li>
+      </ul>
+    </nav>
+    <main>
+      <!-- Content Sections remain the same -->
+      <h2 class="category-title" id="ai-search">
+        <i class="fas fa-robot"></i>AI搜索
+      </h2>
+      <section class="link-grid">
+        <div class="link-card">
+          <i class="fa-brands fa-google"></i>
+          <h3>Google</h3>
+          <a
+            href="https://www.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Google</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-microsoft"></i>
+          <h3>Bing</h3>
+          <a
+            href="https://www.bing.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Bing</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-brain"></i>
+          <h3>ChatGPT</h3>
+          <a
+            href="https://chat.openai.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit ChatGPT</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-comments"></i>
+          <h3>Claude</h3>
+          <a href="https://claude.ai" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Claude</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-google"></i>
+          <h3>Gemini</h3>
+          <a
+            href="https://gemini.google.com/app"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Gemini</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-paw"></i>
+          <h3>百度文心</h3>
+          <a
+            href="https://yiyan.baidu.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Baidu Yiyan</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-comments-dollar"></i>
+          <h3>豆包 AI</h3>
+          <a
+            href="https://www.doubao.com/chat/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Doubao AI Chat</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-alipay"></i>
+          <h3>通义千问</h3>
+          <a
+            href="https://chat.qwen.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Qwen</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-regular fa-moon"></i>
+          <h3>Kimi</h3>
+          <a
+            href="https://kimi.moonshot.cn/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Kimi</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-tencent-weibo"></i>
+          <h3>腾讯元宝</h3>
+          <a
+            href="https://yuanbao.tencent.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Tencent Yuanbao</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-regular fa-image"></i>
+          <h3>Leonardo.ai</h3>
+          <a
+            href="https://app.leonardo.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Leonardo.ai</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-face-smile"></i>
+          <h3>Hugging Face</h3>
+          <a
+            href="https://huggingface.co/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Hugging Face</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-xing"></i>
+          <h3>x.ai (Grok)</h3>
+          <a href="https://x.ai/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit x.ai</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-magnifying-glass-location"></i>
+          <h3>DeepSeek</h3>
+          <a
+            href="https://www.deepseek.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit DeepSeek</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-bolt"></i>
+          <h3>Bolt.new</h3>
+          <a href="https://bolt.new/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Bolt.new</span></a
+          >
+        </div>
+      </section>
+
+      <h2 class="category-title" id="social">
+        <i class="fas fa-users"></i>社交媒体
+      </h2>
+      <section class="link-grid">
+        <div class="link-card">
+          <i class="fa-brands fa-facebook"></i>
+          <h3>Facebook</h3>
+          <a
+            href="https://www.facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Facebook</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-x-twitter"></i>
+          <h3>X (Twitter)</h3>
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit X (Twitter)</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-instagram"></i>
+          <h3>Instagram</h3>
+          <a
+            href="https://www.instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Instagram</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-linkedin"></i>
+          <h3>LinkedIn</h3>
+          <a
+            href="https://www.linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit LinkedIn</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-weibo"></i>
+          <h3>微博</h3>
+          <a href="https://weibo.com" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Weibo</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-tiktok"></i>
+          <h3>TikTok</h3>
+          <a
+            href="https://www.tiktok.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit TikTok</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-reddit-alien"></i>
+          <h3>Reddit</h3>
+          <a
+            href="https://www.reddit.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Reddit</span></a
+          >
+        </div>
+      </section>
+
+      <h2 class="category-title" id="tools">
+        <i class="fas fa-tools"></i>实用工具
+      </h2>
+      <section class="link-grid">
+        <div class="link-card">
+          <i class="fa-solid fa-language"></i>
+          <h3>Google翻译</h3>
+          <a
+            href="https://translate.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Google Translate</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-note-sticky"></i>
+          <h3>Notion</h3>
+          <a
+            href="https://www.notion.so"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Notion</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-book"></i>
+          <h3>Evernote</h3>
+          <a
+            href="https://www.evernote.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Evernote</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-calendar-days"></i>
+          <h3>Google日历</h3>
+          <a
+            href="https://calendar.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Google Calendar</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <h3>Google地图</h3>
+          <a
+            href="https://maps.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Google Maps</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-video"></i>
+          <h3>腾讯会议</h3>
+          <a
+            href="https://meeting.tencent.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Tencent Meeting</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-link-slash"></i>
+          <h3>短链接生成器</h3>
+          <a
+            href="https://d.186404.xyz/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit URL Shortener</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-network-wired"></i>
+          <h3>DynV6</h3>
+          <a href="https://dynv6.com/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit DynV6</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-gauge-high"></i>
+          <h3>Fast.com</h3>
+          <a href="https://fast.com/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Fast.com</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-shield-halved"></i>
+          <h3>Cloudflare</h3>
+          <a
+            href="https://www.cloudflare.com/zh-cn/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Cloudflare</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-book-open-reader"></i>
+          <h3>NotebookLM</h3>
+          <a
+            href="https://notebooklm.google.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit NotebookLM</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-blog"></i>
+          <h3>A姐分享</h3>
+          <a
+            href="https://www.ahhhhfs.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit A姐分享</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-location-dot"></i>
+          <h3>IP.SB</h3>
+          <a href="https://ip.sb/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit IP.SB</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-network-wired"></i>
+          <h3>HE DNS</h3>
+          <a
+            href="https://dns.he.net/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit HE DNS</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <h3>Z-Library</h3>
+          <a
+            href="https://zh.go-to-library.sk/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Z-Library</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-rocket"></i>
+          <h3>Spaceship</h3>
+          <a
+            href="https://www.spaceship.com/zh/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Spaceship</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-font-awesome"></i>
+          <h3>FontAwesome</h3>
+          <a
+            href="https://fontawesome.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit FontAwesome</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-network-wired"></i>
+          <h3>Test IPv6</h3>
+          <a
+            href="https://test-ipv6.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Test IPv6</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid location-dot"></i>
+          <h3>IPCheck.ing</h3>
+          <a
+            href="https://ipcheck.ing/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit IPCheck.ing</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-regular fa-clock"></i>
+          <h3>Cron-Job.org</h3>
+          <a
+            href="https://console.cron-job.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Cron-Job.org</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-robot"></i>
+          <h3>UptimeRobot</h3>
+          <a
+            href="https://uptimerobot.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit UptimeRobot</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <h3>NSLookup.io</h3>
+          <a
+            href="https://www.nslookup.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit NSLookup.io</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-regular fa-file-pdf"></i>
+          <h3>PDF24 Tools</h3>
+          <a
+            href="https://tools.pdf24.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit PDF24 Tools</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-weixin"></i>
+          <h3>微信Markdown编辑器</h3>
+          <a
+            href="https://doocs.github.io/md/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Wechat MD Editor</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-image"></i>
+          <h3>SM.MS 图床</h3>
+          <a href="https://smms.app/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit SM.MS</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <h3>TinyWow</h3>
+          <a
+            href="https://tinywow.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit TinyWow</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-folder-open"></i>
+          <h3>FMHY</h3>
+          <a href="https://fmhy.net/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit FMHY</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-scissors"></i>
+          <h3>Remove.bg</h3>
+          <a
+            href="https://www.remove.bg/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Remove.bg</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-video"></i>
+          <h3>腾讯智影</h3>
+          <a
+            href="https://zenvideo.qq.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Tencent Zhiying</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-pix"></i>
+          <h3>Pixabay</h3>
+          <a
+            href="https://pixabay.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Pixabay</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-copy"></i>
+          <h3>Same.new</h3>
+          <a href="https://same.new/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Same.new</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-download"></i>
+          <h3>Y2Mate</h3>
+          <a
+            href="https://www.y2mate.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Y2Mate</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-music"></i>
+          <h3>Suno AI</h3>
+          <a href="https://suno.com/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Suno AI</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-compass"></i>
+          <h3>影视导航</h3>
+          <a
+            href="https://mv.186404.xyz/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Movie Navigation</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-heart-pulse"></i>
+          <h3>心血管风险评估</h3>
+          <a
+            href="https://ascvdpce.186404.xyz/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit ASCVD Risk Calculator</span></a
+          >
+        </div>
+      </section>
+
+      <h2 class="category-title" id="tech-news">
+        <i class="fas fa-newspaper"></i>科技资讯
+      </h2>
+      <section class="link-grid">
+        <div class="link-card">
+          <i class="fa-solid fa-newspaper"></i>
+          <h3>TechCrunch</h3>
+          <a
+            href="https://www.techcrunch.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit TechCrunch</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-microchip"></i>
+          <h3>The Verge</h3>
+          <a
+            href="https://www.theverge.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit The Verge</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-wifi"></i>
+          <h3>Wired</h3>
+          <a
+            href="https://www.wired.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Wired</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-laptop-code"></i>
+          <h3>Ars Technica</h3>
+          <a
+            href="https://arstechnica.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Ars Technica</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-globe"></i>
+          <h3>36氪</h3>
+          <a href="https://36kr.com" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit 36Kr</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-rss"></i>
+          <h3>少数派</h3>
+          <a href="https://sspai.com" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit SSPai</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-info-circle"></i>
+          <h3>cnBeta</h3>
+          <a
+            href="https://www.cnbeta.com.tw/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit cnBeta</span></a
+          >
+        </div>
+      </section>
+
+      <h2 class="category-title" id="dev"><i class="fas fa-code"></i>开发者</h2>
+      <section class="link-grid">
+        <div class="link-card">
+          <i class="fa-brands fa-github"></i>
+          <h3>GitHub</h3>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit GitHub</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-stack-overflow"></i>
+          <h3>Stack Overflow</h3>
+          <a
+            href="https://stackoverflow.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Stack Overflow</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-firefox-browser"></i>
+          <h3>MDN Web Docs</h3>
+          <a
+            href="https://developer.mozilla.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit MDN Web Docs</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-dev"></i>
+          <h3>Dev.to</h3>
+          <a href="https://dev.to" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Dev.to</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-book"></i>
+          <h3>掘金</h3>
+          <a href="https://juejin.cn" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Juejin</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-terminal"></i>
+          <h3>V2EX</h3>
+          <a
+            href="https://www.v2ex.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit V2EX</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-r"></i>
+          <h3>Render</h3>
+          <a
+            href="https://render.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Render</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-train-subway"></i>
+          <h3>Railway</h3>
+          <a
+            href="https://railway.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Railway</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-v"></i>
+          <h3>Vercel</h3>
+          <a
+            href="https://vercel.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Vercel</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-n"></i>
+          <h3>Netlify</h3>
+          <a
+            href="https://www.netlify.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Netlify</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-i-cursor"></i>
+          <h3>Cursor</h3>
+          <a href="https://cursor.sh/" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit Cursor</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-code"></i>
+          <h3>Codeium</h3>
+          <a
+            href="https://codeium.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Codeium</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-infinity"></i>
+          <h3>InfinityFree Host</h3>
+          <a
+            href="https://www.infinityfree.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit InfinityFree</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-bolt"></i>
+          <h3>GitHub 加速器</h3>
+          <a
+            href="https://gb.w404.nyc.mn/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit GitHub Content Accelerator</span></a
+          >
+        </div>
+      </section>
+
+      <h2 class="category-title" id="cloud-storage">
+        <i class="fas fa-cloud"></i>云存储
+      </h2>
+      <section class="link-grid">
+        <div class="link-card">
+          <i class="fa-brands fa-dropbox"></i>
+          <h3>Dropbox</h3>
+          <a
+            href="https://www.dropbox.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Dropbox</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-google-drive"></i>
+          <h3>Google Drive</h3>
+          <a
+            href="https://drive.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Google Drive</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-windows"></i>
+          <h3>OneDrive</h3>
+          <a
+            href="https://onedrive.live.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit OneDrive</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <h3>百度网盘</h3>
+          <a
+            href="https://pan.baidu.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Baidu Pan</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-alipay"></i>
+          <h3>阿里云盘</h3>
+          <a
+            href="https://www.aliyundrive.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Aliyun Drive</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-m"></i>
+          <h3>MEGA</h3>
+          <a href="https://mega.nz" target="_blank" rel="noopener noreferrer"
+            ><span class="sr-only">Visit MEGA</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-p"></i>
+          <h3>PikPak</h3>
+          <a
+            href="https://mypikpak.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit PikPak</span></a
+          >
+        </div>
+      </section>
+
+      <h2 class="category-title" id="email">
+        <i class="fas fa-envelope"></i>邮箱
+      </h2>
+      <section class="link-grid">
+        <div class="link-card">
+          <i class="fa-brands fa-google"></i>
+          <h3>Gmail</h3>
+          <a
+            href="https://mail.google.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Gmail</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-microsoft"></i>
+          <h3>Outlook</h3>
+          <a
+            href="https://outlook.live.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Outlook</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-brands fa-qq"></i>
+          <h3>QQ邮箱</h3>
+          <a
+            href="https://mail.qq.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit QQ Mail</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-n"></i>
+          <h3>网易邮箱</h3>
+          <a
+            href="https://mail.163.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Netease Mail</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-shield-halved"></i>
+          <h3>ProtonMail</h3>
+          <a
+            href="https://proton.me/mail"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit ProtonMail</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-envelope"></i>
+          <h3>Temp Mail</h3>
+          <a
+            href="https://temp-mail.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit Temp Mail</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-forward"></i>
+          <h3>ForwardEmail</h3>
+          <a
+            href="https://forwardemail.net/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit ForwardEmail</span></a
+          >
+        </div>
+        <div class="link-card">
+          <i class="fa-solid fa-i"></i>
+          <h3>ImprovMX</h3>
+          <a
+            href="https://improvmx.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><span class="sr-only">Visit ImprovMX</span></a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2024 WebNav Hub. All rights reserved.</p>
+      <nav>
+        <!-- Footer links remain the same -->
+        <a href="#">隐私政策</a>
+        <a href="#">使用条款</a>
+        <a href="#">联系我们</a>
+      </nav>
+    </footer>
+
+    <script>
+      // JavaScript remains the same
+      document.addEventListener("DOMContentLoaded", () => {
+        const navLinks = document.querySelectorAll("nav > ul > li > a");
+        const mainNav = document.querySelector("nav");
+        const rootStyle = document.documentElement.style;
+        const sectionTitles = document.querySelectorAll("main h2[id]");
+        let mainNavHeight = mainNav ? mainNav.offsetHeight : 60;
+        let observer = null;
+        let resizeTimeout;
+        let intersectionTimeout;
+
+        const hexToRgb = (hex) => {
+          const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+          hex = hex.replace(
+            shorthandRegex,
+            (m, r, g, b) => r + r + g + g + b + b
+          );
+          const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+          return result
+            ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16),
+              }
+            : null;
+        };
+
+        const updateRootRgb = (variableName, hexColor) => {
+          if (!hexColor || !hexColor.startsWith("#")) {
+            console.warn(
+              `Invalid hex color '${hexColor}' for ${variableName}, using fallback.`
+            );
+            try {
+              const computedColor = getComputedStyle(document.documentElement)
+                .getPropertyValue(variableName)
+                .trim();
+              if (computedColor && computedColor.startsWith("#"))
+                hexColor = computedColor;
+              else
+                hexColor =
+                  variableName.includes("bg-color") &&
+                  !variableName.includes("card")
+                    ? "#f8f9fa"
+                    : "#ffffff"; // Smarter fallback
+            } catch {
+              hexColor =
+                variableName.includes("bg-color") &&
+                !variableName.includes("card")
+                  ? "#f8f9fa"
+                  : "#ffffff";
+            }
+          }
+          try {
+            const rgb = hexToRgb(hexColor);
+            if (rgb) {
+              rootStyle.setProperty(
+                `${variableName}-rgb`,
+                `${rgb.r}, ${rgb.g}, ${rgb.b}`
+              );
+            } else {
+              throw new Error("Failed to parse hex");
+            }
+          } catch (e) {
+            console.error(
+              `Error parsing hex ${hexColor} for ${variableName}:`,
+              e
+            );
+            // Set safe fallbacks based on variable name
+            if (variableName.includes("card-bg"))
+              rootStyle.setProperty(`${variableName}-rgb`, "255, 255, 255");
+            else if (variableName.includes("bg-color"))
+              rootStyle.setProperty(`${variableName}-rgb`, "248, 249, 250");
+            else if (variableName.includes("primary"))
+              rootStyle.setProperty(`${variableName}-rgb`, "74, 144, 226");
+            else if (variableName.includes("text"))
+              rootStyle.setProperty(`${variableName}-rgb`, "52, 58, 64");
+            else rootStyle.setProperty(`${variableName}-rgb`, "255, 255, 255");
+          }
+        };
+
+        const setInitialValues = () => {
+          try {
+            const styles = getComputedStyle(document.documentElement);
+            updateRootRgb(
+              "--card-bg-color",
+              styles.getPropertyValue("--card-bg-color").trim()
+            );
+            updateRootRgb(
+              "--primary-color",
+              styles.getPropertyValue("--primary-color").trim()
+            );
+            updateRootRgb(
+              "--text-color",
+              styles.getPropertyValue("--text-color").trim()
+            );
+            updateRootRgb(
+              "--bg-color",
+              styles.getPropertyValue("--bg-color").trim()
+            ); // Update BG color RGB too
+            mainNavHeight = mainNav ? mainNav.offsetHeight : 60;
+          } catch (e) {
+            console.error("Error setting initial values:", e);
+            rootStyle.setProperty("--card-bg-color-rgb", "255, 255, 255");
+            rootStyle.setProperty("--primary-color-rgb", "74, 144, 226");
+            rootStyle.setProperty("--text-color-rgb", "52, 58, 64");
+            rootStyle.setProperty("--bg-color-rgb", "248, 249, 250");
+            mainNavHeight = 60;
+          }
+        };
+
+        const setupIntersectionObserver = () => {
+          if (observer) observer.disconnect();
+          mainNavHeight = mainNav ? mainNav.offsetHeight : 60; // Recalculate height
+
+          const options = {
+            root: null,
+            // Adjusted rootMargin - triggers a bit earlier/later
+            rootMargin: `-${mainNavHeight + 20}px 0px -${
+              window.innerHeight - mainNavHeight - 180
+            }px 0px`,
+            threshold: 0,
+          };
+
+          const callback = (entries) => {
+            clearTimeout(intersectionTimeout);
+            intersectionTimeout = setTimeout(() => {
+              let currentActiveEntry = null;
+              let highestRatio = -1; // Use -1 to allow 0 ratio to be selected initially
+
+              entries.forEach((entry) => {
+                // Check if entry is intersecting OR if its top is above the activation line
+                const isAboveActivationLine =
+                  entry.boundingClientRect.top < mainNavHeight + 30; // 30px buffer
+
+                if (entry.isIntersecting) {
+                  if (entry.intersectionRatio > highestRatio) {
+                    highestRatio = entry.intersectionRatio;
+                    currentActiveEntry = entry;
+                  } else if (highestRatio === -1) {
+                    // If no intersecting entry chosen yet
+                    currentActiveEntry = entry;
+                  }
+                }
+                // Store the last entry that scrolled past the activation line, even if not intersecting
+                else if (isAboveActivationLine) {
+                  // Prefer an intersecting element, but keep track of the last passed one
+                  if (!currentActiveEntry) {
+                    // Logic to select the *last* one that passed, not just any
+                    // This needs comparing boundingClientRect.top among all isAboveActivationLine entries
+                    // Simplified: just take the first one found in the loop for now, Observer often handles this
+                    // A more robust solution would track the element with the largest (most negative) top value < activation line
+                  }
+                }
+              });
+
+              // Fallback: If no entry is actively intersecting the thin 'rootMargin' line,
+              // find the last one whose top passed the activation line
+              if (!currentActiveEntry) {
+                let lastPassedTitle = null;
+                let minTopAboveLine = -(mainNavHeight + 30); // Initialize close to the line
+
+                sectionTitles.forEach((sectionTitle) => {
+                  const topPos = sectionTitle.getBoundingClientRect().top;
+                  // Check if the top is above the activation line and is the 'closest' one to it from above
+                  if (topPos < mainNavHeight + 30 && topPos > minTopAboveLine) {
+                    // This check doesn't reliably find the *last* one.
+                    // A better approach is to simply find the one with the smallest top >= -infinity and < activation line.
+                    // Let's try tracking the lowest 'top' value that's still above the threshold.
+                    // Correction: find the element whose 'top' is closest to 0 *from below* the activation line
+                    // i.e., largest 'top' value that is still less than `mainNavHeight + 30`.
+                    if (
+                      lastPassedTitle === null ||
+                      topPos > lastPassedTitle.getBoundingClientRect().top
+                    ) {
+                      lastPassedTitle = sectionTitle;
+                    }
+                  }
+                });
+                if (lastPassedTitle) {
+                  currentActiveEntry = { target: lastPassedTitle }; // Create dummy entry
+                }
+              }
+
+              // Update active link
+              navLinks.forEach((link) => link.classList.remove("active"));
+              if (currentActiveEntry?.target) {
+                const id = currentActiveEntry.target.getAttribute("id");
+                const activeLink = document.querySelector(
+                  `nav a[href="#${id}"]`
+                );
+                if (activeLink) {
+                  activeLink.classList.add("active");
+                  // Scroll nav on mobile
+                  if (window.innerWidth <= 768) {
+                    const navList = mainNav.querySelector("ul");
+                    if (navList && navList.scrollWidth > navList.clientWidth) {
+                      const activeRect = activeLink.getBoundingClientRect();
+                      const navRect = navList.getBoundingClientRect();
+                      if (
+                        activeRect.left < navRect.left + 10 ||
+                        activeRect.right > navRect.right - 10
+                      ) {
+                        // Added buffer
+                        navList.scrollTo({
+                          left:
+                            activeLink.offsetLeft -
+                            navList.offsetWidth / 2 +
+                            activeLink.offsetWidth / 2,
+                          behavior: "smooth",
+                        });
+                      }
+                    }
+                  }
+                }
+              }
+            }, 75); // Slightly longer debounce for scroll spy
+          };
+
+          observer = new IntersectionObserver(callback, options);
+          if (sectionTitles.length > 0) {
+            sectionTitles.forEach((title) => observer.observe(title));
+          } else {
+            console.warn("No H2 titles with IDs found for scroll spy.");
+          }
+        };
+
+        // --- Event Listeners ---
+        setInitialValues();
+        setTimeout(setupIntersectionObserver, 200); // Increased delay
+
+        try {
+          const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+          const schemeChangeHandler = () => {
+            setTimeout(() => {
+              setInitialValues();
+              setupIntersectionObserver();
+            }, 150); // Adjusted timeout
+          };
+          if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener("change", schemeChangeHandler);
+          } else if (mediaQuery.addListener) {
+            mediaQuery.addListener(schemeChangeHandler);
+          }
+        } catch (e) {
+          console.error("Error setting up color scheme listener:", e);
+        }
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", (e) => {
+            const targetId = link.getAttribute("href");
+            if (targetId?.startsWith("#") && targetId.length > 1) {
+              e.preventDefault();
+              const targetElement = document.querySelector(targetId);
+              if (targetElement) {
+                mainNavHeight = mainNav ? mainNav.offsetHeight : 60;
+                const targetPosition =
+                  targetElement.offsetTop - mainNavHeight - 25; // Increased buffer
+                window.scrollTo({ top: targetPosition, behavior: "smooth" });
+                // Immediate update remains useful for perceived responsiveness
+                navLinks.forEach((l) => l.classList.remove("active"));
+                link.classList.add("active");
+              } else {
+                console.warn(
+                  `Target element not found for selector ${targetId}`
+                );
+              }
+            }
+          });
+        });
+
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimeout);
+          resizeTimeout = setTimeout(() => {
+            setInitialValues();
+            setupIntersectionObserver();
+          }, 300); // Increased debounce
+        });
+      });
+    </script>
+  </body>
+</html>
