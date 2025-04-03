@@ -70,7 +70,7 @@ python -m http.server 8000
 
 ### 添加新链接
 
-在 `w.html` 文件中找到相应的分类部分，按照以下格式添加新的链接卡片：
+在 `index.html` 文件中找到相应的分类部分，按照以下格式添加新的链接卡片：
 
 ```html
 <div class="link-card">
